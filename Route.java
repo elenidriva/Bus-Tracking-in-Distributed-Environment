@@ -1,5 +1,6 @@
 
 public class Route {
+	// Following the pattern of the BusLinesDescription.txt we have the class Route with the following attributes.
 	private int routeCode;		// Unique ID for Bus's route.
 	private int lineCode;  // lineCode from class BusLines.java or int??
 	private int routeType;		// beginning to end
@@ -18,9 +19,6 @@ public class Route {
 		return routeCode;
 	}
 	
-	public int getRoutCode() {
-		return routeCode;
-	}	
 	public void setRouteCode(int routeCode) {
 		this.routeCode = routeCode;
 	}
