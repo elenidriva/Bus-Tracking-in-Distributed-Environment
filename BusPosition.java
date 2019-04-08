@@ -1,4 +1,4 @@
-import java.sql.Date;
+import java.util.Date;
 
 public class BusPosition {
 	// Following the pattern of the BusLinesDescription.txt we have the class BusPosition with the following attributes.

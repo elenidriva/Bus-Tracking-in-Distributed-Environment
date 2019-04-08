@@ -1,12 +1,17 @@
 
 public class Route {
 	// Following the pattern of the BusLinesDescription.txt we have the class Route with the following attributes.
+	// will need to cast these in String types later on perhaps.
 	private int routeCode;		// Unique ID for Bus's route.
 	private int lineCode;  // lineCode from class BusLines.java or int??
 	private int routeType;		// beginning to end
 	private String routeDescription;
 	
-
+	Route(int routeCode, int lineCode, String routeDescription){
+		this.routeCode = routeCode;
+		this.lineCode = lineCode;
+		this.routeDescription = routeDescription;
+	}
 	
 	Route(int routeCode, int lineCode, int routeType, String routeDescription){
 		this.routeCode = routeCode;

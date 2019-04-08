@@ -1,20 +1,89 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
-public class Publisher {
+public class Publisher implements Runnable {
+	
+	BufferedReader toServer;
+	PrintWriter fromServer;
+	//Socket client;
+	Consumer consumer = new Consumer();
+	Socket connection;
+	String message = null;
+	private static int port = 5555;
+	
+	
 	// We will store all the data we've made so far here. So we can somehow continue!
 	// We will need these to be static.
 	static ArrayList<Route> routes = new ArrayList<Route>();
 	static ArrayList<BusLines> busLines = new ArrayList<BusLines>();
 	static ArrayList<BusPosition> busPositions = new ArrayList<BusPosition>();
-	// We'll probably need another one for the class Bus, if we actually use it.
-	// But I guess the Bus itself as a conceptual class should exist.
+	static ArrayList<Value> busInfo = new ArrayList<Value>();
+	
+	public Publisher(Socket s){
+		try{
+			System.out.println("Client Got Connected on port  " + port );
+			connection=s;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	public static void main (String[] args) throws IOException, ParseException {
+		//int serverPort = getRandomPort(4444,9999);
+		createTheLists();
+		//System.out.println(busInfo.get(0).getBus().getLine());
+		// creating this so we see if it works correctly
+		ServerSocket client = new ServerSocket(port);
+		while(true) {
+			Socket socket = client.accept();
+			Publisher server = new Publisher(socket);
+			Thread serverThread = new Thread(server);
+			serverThread.start();
+			System.out.println("New client thread created");
+		}
+		
+	}
+    
+	public void run() {
+	
+        try {
+			toServer = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			fromServer = new PrintWriter(new OutputStreamWriter(connection.getOutputStream()));
+			fromServer.println("You can now request the position of a bus. Please Enter the BusLine.");
+            fromServer.flush();
+			
+	        String busLineRequest = toServer.readLine();
+	        System.out.println("BusLine req: " + busLineRequest);
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		
+		}
+		
+	}
+	
 	
 	
 	
@@ -24,11 +93,9 @@ public class Publisher {
 		createRoutes(routes);
 		createBusLines(busLines);
 		createBusPositions(busPositions);
-		
-		
-		
-	}
 	
+	}
+	// We will create Routes here
 	private static void createRoutes(ArrayList<Route> routes) throws IOException {
         BufferedReader in = new BufferedReader(new FileReader("RouteCodesNew.txt"));
         String str;
@@ -43,7 +110,7 @@ public class Publisher {
          
             //need to convert from string to int for the columns int routeCode, lineCode, routeType;
             // valueOf-> Integer Object or parseInt -> int
-            routes.add( new Route(Integer.parseInt(columns[0]), Integer.parseInt(columns[1]), Integer.parseInt(columns[2]), columns[3]));
+            routes.add( new Route(Integer.parseInt(columns[0]), Integer.parseInt(columns[1]), columns[2]));
         }
         in.close();
         /*
@@ -59,6 +126,8 @@ public class Publisher {
         */
         
 	}
+	
+	// Here we need to see which Route a BUS follows.
 	private static void createBusLines(ArrayList<BusLines> busLines) throws NumberFormatException, IOException {
 	
         BufferedReader in = new BufferedReader(new FileReader("BusLinesNew.txt"));
@@ -74,6 +143,7 @@ public class Publisher {
             //need to convert from string to int for the columns int routeCode, lineCode, routeType;
             // valueOf-> Integer Object or parseInt -> int
             busLines.add( new BusLines (Integer.parseInt(columns[0]), columns[1], columns[2]));
+ 
             
             /*
             System.out.println("busLines List");
@@ -104,9 +174,18 @@ public class Publisher {
                 columns[i] = word;
                 i++;
             }
+            String dateSeen = columns[5];
             // https://www.mkyong.com/java/how-to-convert-string-to-date-java/  parsing the Date 
             // https://stackoverflow.com/questions/4216745/java-string-to-date-conversion
             DateFormat formatter = new SimpleDateFormat("MMM d yyyy HH:mm:ss:SSSa");
+            Date date = formatter.parse(dateSeen);
+            for(Route route: routes) {
+            	
+            	if(Integer.toString(route.getLineCode()).equals(columns[0]) && Integer.toString(route.getRouteCode()).equals(columns[1])){
+            		Bus bus = new Bus(columns[0], columns[1], columns[2], route.getRouteDescription(), Integer.toString(route.getLineCode()), date);
+            		busInfo.add(new Value(bus, Double.parseDouble(columns[3]),Double.parseDouble(columns[4])));
+            	}
+            }
            // String dateInString = "Mar  4 2019 11:50:50:000AM"; // dummy
           // Date date =  formatter.parse(columns[5]); // sql.Date was creating problem
             // vehicleID needs trimming because of whitespace creaint problem
@@ -134,12 +213,6 @@ public class Publisher {
 	}
 
 
-	public static void main(String[] args) throws IOException, ParseException {
-		createTheLists();
-	// creating this so we see if it works correctly
-	}
-	
-	
 	
 	
 	
