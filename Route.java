@@ -1,42 +1,44 @@
+import java.io.Serializable;
 
 public class Route {
 	// Following the pattern of the BusLinesDescription.txt we have the class Route with the following attributes.
 	// will need to cast these in String types later on perhaps.
-	private int routeCode;		// Unique ID for Bus's route.
-	private int lineCode;  // lineCode from class BusLines.java or int??
-	private int routeType;		// beginning to end
+	private String routeCode;		// Unique ID for Bus's route.
+	private String lineCode;  // lineCode from class BusLines.java or int??
+	private String routeType;		// beginning to end
 	private String routeDescription;
-	
-	Route(int routeCode, int lineCode, String routeDescription){
+	private String lineID;
+	Route( String lineCode, String routeCode, String routeDescription){
 		this.routeCode = routeCode;
 		this.lineCode = lineCode;
 		this.routeDescription = routeDescription;
 	}
 	
-	Route(int routeCode, int lineCode, int routeType, String routeDescription){
+	Route(String lineCode, String routeCode, String routeType, String routeDescription){
 		this.routeCode = routeCode;
 		this.lineCode = lineCode;
 		this.routeType = routeType;
 		this.routeDescription = routeDescription;
 	}
-	
-	public int getRouteCode() {
+
+
+	public String getRouteCode() {
 		return routeCode;
 	}
 	
-	public void setRouteCode(int routeCode) {
+	public void setRouteCode(String routeCode) {
 		this.routeCode = routeCode;
 	}
-	public int getLineCode() {
+	public String getLineCode() {
 		return lineCode;
 	}
-	public void setLineCode(int lineCode) {
+	public void setLineCode(String lineCode) {
 		this.lineCode = lineCode;
 	}
-	public int getRouteType() {
+	public String getRouteType() {
 		return routeType;
 	}
-	public void setRouteType(int routeType) {
+	public void setRouteType(String routeType) {
 		this.routeType = routeType;
 	}
 	public String getRouteDescription() {
@@ -44,6 +46,13 @@ public class Route {
 	}
 	public void setRouteDescription(String routeDescription) {
 		this.routeDescription = routeDescription;
+	}
+	String getLineID(){
+		return lineID;
+	}
+	
+	void setlineID(String lineID) {
+		this.lineID =lineID;
 	}
 	
 }

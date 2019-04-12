@@ -1,16 +1,15 @@
 import java.util.Date;
-
+import java.io.Serializable;
 public class BusPosition {
 	// Following the pattern of the BusLinesDescription.txt we have the class BusPosition with the following attributes.
-private int lineCode;
+private String lineCode;
 private int routeCode;
 private int vehicleID;
 private double latitude;
 private double longitude;
 private Date timeStampOfBusPos;
 	
-
-	BusPosition(int lineCode, int routeCode, int vehicleID, double latitude, double longitude, Date timeStampOfBusPos){
+	BusPosition(String lineCode, int routeCode, int vehicleID, double latitude, double longitude, Date timeStampOfBusPos){
 	this.setLineCode(lineCode);
 	this.setRouteCode(routeCode);
 	this.setVehicleID(vehicleID);
@@ -21,12 +20,12 @@ private Date timeStampOfBusPos;
 	}
 
 
-	public int getLineCode() {
+	public String getLineCode() {
 		return lineCode;
 	}
 
 
-	public void setLineCode(int lineCode) {
+	public void setLineCode(String lineCode) {
 		this.lineCode = lineCode;
 	}
 
