@@ -20,15 +20,11 @@ import java.util.HashMap;
 
 public class Publisher implements Serializable {
 	
-
-	//Socket client;
-	//Consumer consumer = new Consumer();
-	//static Socket connection;
 	String message = null;
 	private static int port = 5678;
 	
 	
-	// We will store all the data we've made so far here. So we can somehow continue!
+
 	// We will need these to be static.
 	static ArrayList<Route> routes = new ArrayList<Route>();
 	static ArrayList<BusLines> busLines = new ArrayList<BusLines>();
@@ -36,51 +32,33 @@ public class Publisher implements Serializable {
 	static ArrayList<Value> values = new ArrayList<>();
 	private static ArrayList<Topic> busInfo = new ArrayList<>();
     private static HashMap<Topic, ArrayList<Value>> serverResults = new HashMap<>();
-	
-    /*
-	public Publisher(Socket s){
-		try{
-			System.out.println("Client Got Connected on port  " + port );
-			connection=s;
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-	}
-	*/
 
-	public static void main (String[] args) throws IOException, ParseException {
+
+	public static void main (String[] args) throws IOException, ParseException, InterruptedException {
 		//int serverPort = getRandomPort(4444,9999);
-		createTheLists();
 		Broker.createTopic(busInfo);
 		createRoutes(routes);
 		createBusLines(busLines);
 		createBus();
-		//System.out.println(busInfo.get(0).getBus().getLine());
-		// creating this so we see if it works correctly
-		ServerSocket socket = new ServerSocket(port);
-		//while(true) {
-			//Socket socket = client.accept();
-			//Publisher server = new Publisher(socket);
-
+		
+		ServerSocket socket = new ServerSocket(port, 100);
 			System.out.println("New client thread created");
 		       try {
 		            while (true) {
 		                Socket connected = socket.accept();
 		    			Thread serverThread = new Thread(new ConnectionWithBroker(connected));
-		    			serverThread.start();
+		    			
 		    			System.out.println("New Broker with adrdress" + " " + connected.getInetAddress() + " has connected on port: " + connected.getLocalPort() + connected.getPort()); // it's the default port they always connect there first
-
+		    			serverThread.start();
 		            }
 		        } catch (IOException e) {
-		        	e.printStackTrace();
+		            throw new RuntimeException("cannot connect", e);
 		        }
 			}
 		//}
 		
-	
-	
-	
-    public static class ConnectionWithBroker implements Runnable, Serializable { // this is our push function
+
+	public static class ConnectionWithBroker implements Runnable { // this is our push function
         private static Socket connected;
 
         ConnectionWithBroker(Socket connected) {
@@ -95,7 +73,7 @@ public class Publisher implements Serializable {
                 Object fromServer;
                 ObjectInputStream toServer = new ObjectInputStream(connected.getInputStream());
                 fromServer = toServer.readObject();
-                if(fromServer.toString().startsWith("Broker")) {
+                if(fromServer.toString().startsWith("1") || fromServer.toString().startsWith("2") || fromServer.toString().startsWith("3")) {
                 	
                     broker = fromServer.toString();
                     System.out.println(broker + " has connected to the Server.");
@@ -113,7 +91,7 @@ public class Publisher implements Serializable {
                     }
 
                 }
-                System.out.println("sending out to" + connected);
+                System.out.println("Sending information to: " + connected);
                 ObjectOutputStream out = new ObjectOutputStream(connected.getOutputStream());
                 out.writeObject(serverResults);
     			out.writeObject("Stop");
@@ -122,26 +100,12 @@ public class Publisher implements Serializable {
         	} catch (IOException | ClassNotFoundException e) {
     		// TODO Auto-generated catch block
         		e.printStackTrace();
-    	
         	}
     	
     	}		
-	
-	
-	
 
-	
     }
     
-	private static void createTheLists() throws IOException, ParseException {
-
-		
-			
-			
-		}
-		
-	
-	
 	// We will create Routes here
 	private static void createRoutes(ArrayList<Route> routes) throws IOException {
         BufferedReader in = new BufferedReader(new FileReader("RouteCodesNew.txt"));
@@ -248,17 +212,14 @@ public class Publisher implements Serializable {
                     		values.add(new Value(bus));
             			}
             		}
-            		//values will return tubles of the following format bus, lat, long
+            		//values will return tuples of the following format bus, lat, long
             	}
             }
-           // String dateInString = "Mar  4 2019 11:50:50:000AM"; // dummy
-          // Date date =  formatter.parse(columns[5]); // sql.Date was creating problem
-            // vehicleID needs trimming because of whitespace creaint problem
-          //  busPositions.add( new BusPosition (Integer.parseInt(columns[0]), Integer.parseInt(columns[1]),Integer.parseInt(columns[2].trim()), Double.parseDouble(columns[3]), Double.parseDouble(columns[4]), formatter.parse(columns[5])));            
-           
+
             
            }
         in.close();
+        /*
         System.out.println("Bus List is ready!");
         System.out.println("Values List is ready!");
         for(int j = 0; j < values.size(); j++) {
@@ -267,8 +228,8 @@ public class Publisher implements Serializable {
        System.out.println("Long:" + values.get(j).getBus().getLongitude());
        System.out.println("LineID:" + values.get(j).getBus().getLineID());
        System.out.println("Descr:" + values.get(j).getBus().getRouteCode());
+        */
         
-        }
         /*
         System.out.println("busPositions List");
         for(int j = 0; j < busPositions.size(); j++) {
@@ -280,20 +241,6 @@ public class Publisher implements Serializable {
        System.out.println(busPositions.get(j).getLongitude());
        System.out.println(busPositions.get(j).getTimeStampOfBusPos());
        */
-        
-		
-		
-		
-		
+	
 	}
-
-	//fromServer.println("You can now request the position of a bus. Please Enter the BusLine.");
-    // fromServer.flush();	
-    // String busLineRequest = toServer.readLine();
-    // System.out.println("BusLine req: " + busLineRequest);
-
-
-
-	
-	
 }
